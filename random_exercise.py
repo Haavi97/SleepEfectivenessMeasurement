@@ -2,7 +2,7 @@ import random
 
 
 def generate_random_int_places(n: int = 3) -> int:
-    # Generates a random integer with maximum n places. 
+    # Generates a random integer with maximum n places.
     # n=3 by default. On failure 3 is used.
     try:
         return random.randint(0, 10**n)
@@ -14,5 +14,35 @@ def generate_random_int_places(n: int = 3) -> int:
         return random.randint(0, 10**3)
 
 
+def generate_exercise(difficulty: int = 2) -> str:
+    # Generates an exercise with the given difficulty.
+    # Difficulty means number of operations.
+    # 1: 1 operation, 2: 2 operations, etc.
+    # 2 by default.
+    numbers = [generate_random_int_places() for _ in range(difficulty+1)]
+    operations = ['+', '-', '*', '/']
+    exercise = ''
+    for i in range(difficulty):
+        exercise += f'{numbers[i]} {random.choice(operations)} '
+    exercise += f'{numbers[-1]}'
+    return exercise
+
+
+def generate_exercise_with_solution(difficulty: int = 2) -> str:
+    # Generates an exercise with the given difficulty.
+    # Difficulty means number of operations.
+    # 1: 1 operation, 2: 2 operations, etc.
+    # 2 by default.
+    numbers = [generate_random_int_places() for _ in range(difficulty+1)]
+    operations = ['+', '-', '*', '/']
+    exercise = ''
+    for i in range(difficulty):
+        exercise += f'{numbers[i]} {random.choice(operations)} '
+    exercise += f'{numbers[-1]}'
+    return exercise, eval(exercise)
+
+
 if __name__ == '__main__':
     print(generate_random_int_places('2'))
+    print(generate_exercise(2))
+    print(generate_exercise_with_solution(2))
