@@ -34,32 +34,28 @@ def generate_exercise(difficulty: int = 2, multiples: bool = True) -> str:
     # Difficulty means number of operations.
     # 1: 1 operation, 2: 2 operations, etc.
     # 2 by default.
-    OPERTIONS = ['+', '-', '*', '/']
-    operations = [random.choice(OPERTIONS) for _ in range(difficulty)]
-    numbers = [generate_random_int_places() for _ in range(difficulty+1)]
+    # Multiples means if the division should be a multiple of the divisor.
+    OPERATIONS = ['+', '-', '*', '/']
+    operations = [random.choice(OPERATIONS) for _ in range(difficulty)]
+    numbers = [generate_random_int_places(2)]
     exercise = ''
-    for i in range(difficulty):
-        exercise += f'{numbers[i]} {random.choice(operations)} '
-    exercise += f'{numbers[-1]}'
+    for operation in operations:
+        exercise = f'{operation} {numbers[-1]} {exercise}'
+        if operation == '/' and multiples:
+            numbers.append(generate_random_multiple_int_places(numbers[-1]))
+        else:
+            numbers.append(generate_random_int_places())
+    exercise = f'{numbers[-1]} {exercise}'
     return exercise
 
 
-def generate_exercise_with_solution(difficulty: int = 2) -> str:
-    # Generates an exercise with the given difficulty.
-    # Difficulty means number of operations.
-    # 1: 1 operation, 2: 2 operations, etc.
-    # 2 by default.
-    numbers = [generate_random_int_places() for _ in range(difficulty+1)]
-    operations = ['+', '-', '*', '/']
-    exercise = ''
-    for i in range(difficulty):
-        exercise += f'{numbers[i]} {random.choice(operations)} '
-    exercise += f'{numbers[-1]}'
+def generate_exercise_with_solution(difficulty: int = 2, multiples: bool = True) -> str:
+    exercise = generate_exercise(difficulty, multiples)
     return exercise, eval(exercise)
 
 
 if __name__ == '__main__':
-    print(generate_random_int_places('2'))
-    print(generate_random_multiple_int_places(135))
-    print(generate_exercise(2))
+    # print(generate_random_int_places('2'))
+    # print(generate_random_multiple_int_places(135))
+    # print(generate_exercise(2))
     print(generate_exercise_with_solution(2))
