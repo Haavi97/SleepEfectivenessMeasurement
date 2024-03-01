@@ -20,5 +20,30 @@ def measure_exercise() -> float:
     return delta_time
 
 
+def print_menu():
+    print('Welcome to the exercise generator')
+    print('1. Generate exercise')
+    print('2. Measure exercise')
+    print('3. Exit')
+
+
 if __name__ == '__main__':
-    measure_exercise()
+    while True:
+        try:
+            print_menu()
+            option = input('Write the number of the option you want to execute: ')
+            if option == '1':
+                exercise, solution = generate_exercise_with_solution()
+                print('Exercise:')
+                print(exercise)
+                print('Solution:')
+                print(solution)
+            elif option == '2':
+                measure_exercise()
+            elif option == '3':
+                print('Goodbye!')
+                break
+            else:
+                print('Please, write a valid option')
+        except:
+            print('An error occurred, please try again')
