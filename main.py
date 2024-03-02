@@ -20,18 +20,31 @@ def measure_exercise() -> float:
     return delta_time
 
 
+def generate_daily_routine() -> list:
+    times = []
+    for i in range(3):
+        print(f'Exercise {i+1}')
+        times.append(measure_exercise())
+        print()
+    print(f'Your average solving time is: {sum(times)/len(times)} seconds')
+    return times
+
+
 def print_menu():
     print('Welcome to the exercise generator')
     print('1. Generate exercise')
     print('2. Measure exercise')
-    print('3. Exit')
+    print('3. Daily routine')
+    print('4. Exit')
+
 
 
 if __name__ == '__main__':
     while True:
         try:
             print_menu()
-            option = input('Write the number of the option you want to execute: ')
+            option = input(
+                'Write the number of the option you want to execute: ')
             if option == '1':
                 exercise, solution = generate_exercise_with_solution()
                 print('Exercise:')
@@ -41,6 +54,8 @@ if __name__ == '__main__':
             elif option == '2':
                 measure_exercise()
             elif option == '3':
+                generate_daily_routine()
+            elif option == '4':
                 print('Goodbye!')
                 break
             else:
