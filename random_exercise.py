@@ -5,20 +5,21 @@ def generate_random_int_places(n: int = 3) -> int:
     # Generates a random integer with maximum n places.
     # n=3 by default. On failure 3 is used.
     try:
-        return random.randint(0, 10**n)
+        return random.randint(1, 10**n)
     except:
         print(
             'Error in generate_random_int_places.\n'
             f'Returning with n=3.\nGiven n: {n}\n'
             f'n type: {type(n)}')
-        return random.randint(0, 10**3)
+        return random.randint(1, 10**3)
 
 
 def generate_random_multiple_int_places(multiple: int, n: int = 3) -> int:
     # Generates a random integer with maximum n places.
     # n=3 by default. On failure 3 is used.
     try:
-        return random.randrange(0, 10**n, multiple)
+        generated = random.randrange(0, 10**n, multiple)
+        return generated if generated else generate_random_multiple_int_places(multiple, n)
     except:
         print(
             'Error in generate_random_multiple_int_places.\n'
@@ -26,8 +27,18 @@ def generate_random_multiple_int_places(multiple: int, n: int = 3) -> int:
             f'multiple type: {type(multiple)}\n'
             f'Returning with n=3.\nGiven n: {n}\n'
             f'n type: {type(n)}')
-        return random.randrange(0, 10**3, 1)
+        generated = random.randrange(0, 10**3, multiple)
+        return generated if generated else generate_random_multiple_int_places(multiple, n)
 
+def get_random_operation(exclude: str = None) -> str:
+    OPERATIONS = ['+', '-', '*', '/']
+    try:
+        if exclude:
+            OPERATIONS.remove(exclude)
+    except:
+        print('Invalid exclude value in get_random_operation')
+        pass
+    return random.choice(OPERATIONS)
 
 def generate_exercise(difficulty: int = 2, multiples: bool = True) -> str:
     # Generates an exercise with the given difficulty.
@@ -36,17 +47,22 @@ def generate_exercise(difficulty: int = 2, multiples: bool = True) -> str:
     # 2 by default.
     # Multiples means if the division should be a multiple of the divisor.
     OPERATIONS = ['+', '-', '*', '/']
-    operations = [random.choice(OPERATIONS) for _ in range(difficulty)]
-    numbers = [generate_random_int_places(2)]
+    operations = [random.choice(OPERATIONS)]
+    for _ in range(difficulty-1):
+        operations.append(get_random_operation(operations[-1]))
+    numbers = [generate_random_int_places(difficulty)]
     exercise = ''
     for operation in operations:
         exercise = f'{operation} {numbers[-1]} {exercise}'
         if operation == '/' and multiples:
-            numbers.append(generate_random_multiple_int_places(numbers[-1]))
+            numbers.append(generate_random_multiple_int_places(
+                numbers[-1], difficulty+1))
+        elif operation == '*':
+            numbers[-1] = generate_random_int_places(difficulty - 1)
+            numbers.append(generate_random_int_places(difficulty))
         else:
-            numbers.append(generate_random_int_places())
-    exercise = f'{numbers[-1]} {exercise}'
-    return exercise
+            numbers.append(generate_random_int_places(difficulty))
+    return f'{numbers[-1]} {exercise}'
 
 
 def generate_exercise_with_solution(difficulty: int = 2, multiples: bool = True) -> str:
