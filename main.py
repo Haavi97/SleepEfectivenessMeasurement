@@ -11,6 +11,8 @@ def measure_exercise() -> float:
     while answer != int(solution):
         try:
             answer = int(input('Your answer here: '))
+        except KeyboardInterrupt:
+            break
         except:
             print('Please, write a valid number')
     print('Congrats! That\'s the correct answer')
@@ -20,9 +22,9 @@ def measure_exercise() -> float:
     return delta_time
 
 
-def generate_daily_routine() -> list:
+def generate_daily_routine(n: int = 3) -> list:
     times = []
-    for i in range(3):
+    for i in range(n):
         print(f'Exercise {i+1}')
         times.append(measure_exercise())
         print()
@@ -36,7 +38,6 @@ def print_menu():
     print('2. Measure exercise')
     print('3. Daily routine')
     print('4. Exit')
-
 
 
 if __name__ == '__main__':
@@ -60,5 +61,8 @@ if __name__ == '__main__':
                 break
             else:
                 print('Please, write a valid option')
+        except KeyboardInterrupt:
+            print('Goodbye!')
+            break
         except:
             print('An error occurred, please try again')
