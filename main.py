@@ -1,10 +1,12 @@
 from datetime import datetime as dt
 
 from random_exercise import generate_exercise_with_solution
-from data_utils import save_to_csv, append_column_to_csv, save_headers_to_csv
+from data_utils import append_column_to_csv, save_headers_to_csv
 import os
 
 daily_routine_filename = 'daily_routine.csv'
+MAX_SOLVING_TIME = 10
+
 
 def start_configuration():
     if not os.path.exists(daily_routine_filename):
@@ -18,6 +20,8 @@ def measure_exercise() -> float:
     print(exercise)
     answer = None
     incorrect = -1
+    correct = 0
+    delta_time = 0
     while answer != int(solution):
         incorrect += 1
         try:
@@ -26,25 +30,32 @@ def measure_exercise() -> float:
             break
         except:
             print('Please, write a valid number')
-    print('Congrats! That\'s the correct answer')
-    finish = dt.now()
-    delta_time = (finish-start).seconds
+        delta_time = (dt.now()-start).seconds
+        if delta_time >= MAX_SOLVING_TIME:
+            correct -= 1
+            break
+    correct += 1
+    print('Congrats! That\'s the correct answer' if correct else
+          'You didn\'t solve the exercise. Time is up!')
     print(f'Your solving time: {delta_time} seconds')
-    return delta_time, incorrect
+    return delta_time, incorrect, correct
 
 
 def generate_daily_routine(n: int = 3) -> list:
     times = []
     incorrects = []
+    corrects = []
     for i in range(n):
         print(f'Exercise {i+1}')
-        time, incorrect = measure_exercise()
+        time, incorrect, correct = measure_exercise()
+        # print(f'Exercise {i+1} solved in {time} seconds. Correct: {correct}, Incorrect: {incorrect}')
         times.append(time)
         incorrects.append(incorrect)
+        corrects.append(correct)
         print()
     avg_time = sum(times)/len(times)
-    append_column_to_csv([dt.now(), sum(times), avg_time, n, n, sum(incorrects)],
-                  daily_routine_filename)
+    append_column_to_csv([dt.now(), sum(times), avg_time, n, sum(corrects), sum(incorrects)],
+                         daily_routine_filename)
     print(f'Your average solving time is: {avg_time} seconds')
     return times
 
