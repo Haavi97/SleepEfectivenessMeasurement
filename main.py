@@ -9,7 +9,9 @@ MAX_SOLVING_TIME = 10
 
 
 def start_configuration():
-    if not os.path.exists(daily_routine_filename):
+    if not os.path.exists('data'):
+        os.makedirs('data')
+    if not os.path.exists('data' + os.sep + daily_routine_filename):
         save_headers_to_csv(daily_routine_filename)
 
 

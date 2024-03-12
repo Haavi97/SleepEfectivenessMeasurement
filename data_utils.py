@@ -1,8 +1,9 @@
 import csv
+import os
 
 
 def save_to_csv(data: list, filename: str, mode: str = 'w') -> None:
-    with open(filename,
+    with open('data' + os.sep + filename,
               mode, newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(data)
