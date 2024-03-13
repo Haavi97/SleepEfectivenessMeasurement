@@ -61,13 +61,31 @@ def generate_daily_routine(n: int = 3) -> list:
     print(f'Your average solving time is: {avg_time} seconds')
     return times
 
+def settings():
+    print('Settings')
+    print('1. Change the maximum solving time')
+    print('2. Change the number of exercises in the daily routine')
+    print('3. Back')
+    option = input('Write the number of the option you want to execute: ')
+    if option == '1':
+        global MAX_SOLVING_TIME
+        MAX_SOLVING_TIME = int(input('Write the new maximum solving time: '))
+    elif option == '2':
+        n = int(input('Write the new number of exercises in the daily routine: '))
+        generate_daily_routine(n)
+    elif option == '3':
+        return
+    else:
+        print('Please, write a valid option')
+
 
 def print_menu():
     print('Welcome to the exercise generator')
     print('1. Generate exercise')
     print('2. Measure exercise')
     print('3. Daily routine')
-    print('4. Exit')
+    print('4. Settings')
+    print('5. Exit')
 
 
 if __name__ == '__main__':
@@ -88,6 +106,8 @@ if __name__ == '__main__':
             elif option == '3':
                 generate_daily_routine()
             elif option == '4':
+                settings()
+            elif option == '5':
                 print('Goodbye!')
                 break
             else:
