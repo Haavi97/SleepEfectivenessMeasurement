@@ -55,8 +55,9 @@ def generate_daily_routine(n: int = 3) -> list:
         incorrects.append(incorrect)
         corrects.append(correct)
         print()
+    notes = input('Enter any notes: ')
     avg_time = sum(times)/len(times)
-    append_column_to_csv([dt.now(), sum(times), avg_time, n, sum(corrects), sum(incorrects)],
+    append_column_to_csv([dt.now(), sum(times), avg_time, n, sum(corrects), sum(incorrects), notes],
                          daily_routine_filename)
     print(f'Your average solving time is: {avg_time} seconds')
     return times

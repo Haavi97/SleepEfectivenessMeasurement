@@ -17,7 +17,7 @@ def append_column_to_csv(data: list, filename: str) -> None:
 
 def save_headers_to_csv(filename: str) -> None:
     headers = ['timestamp', 'total_time', 'avg_time',
-               'n_exercises', 'n_correct', 'n_incorrect']
+               'n_exercises', 'n_correct', 'n_incorrect', 'notes']
     save_to_csv([headers], filename)
     print(f"Headers saved to {filename}")
 
