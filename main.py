@@ -2,6 +2,7 @@ from datetime import datetime as dt
 
 from random_exercise import generate_exercise_with_solution
 from data_utils import append_column_to_csv, save_headers_to_csv
+from db_utils import create_connection, create_records_table, add_record
 import os
 import json
 
@@ -10,19 +11,26 @@ MAX_SOLVING_TIME = 10
 n = 3
 
 
-def start_configuration():
-    global MAX_SOLVING_TIME
+def start_configuration(connection=None):
+    if not connection:
+        connection = create_connection('sem_app.sqlite')
+    create_records_table(connection)
+    global MAX_SOLVING_TIME, n
     if not os.path.exists('data'):
         os.makedirs('data')
     if not os.path.exists('data' + os.sep + daily_routine_filename):
         save_headers_to_csv(daily_routine_filename)
-    if not os.path.exists('config.json'):
-        with open('config.json', 'w') as f:
-            json.dump({}, f)
-    with open('config.json', 'r') as f:
-        config = json.load(f)
-        MAX_SOLVING_TIME = config.get('max_solving_time', MAX_SOLVING_TIME)
-        n = config.get('n_exercises', n)
+    try:
+        with open('config.json', 'r') as f:
+            config = json.load(f)
+            MAX_SOLVING_TIME = config['max_solving_time']
+            n = config['n']
+    except FileNotFoundError:
+        if not os.path.exists('config.json'):
+            with open('config.json', 'w') as f:
+                json.dump({'max_solving_time': MAX_SOLVING_TIME, 'n': n}, f)
+    except Exception as e:
+        print('An error occurred while reading the configuration file', e, sep='\n')
 
 
 def measure_exercise() -> float:
@@ -53,7 +61,7 @@ def measure_exercise() -> float:
     return delta_time, incorrect, correct
 
 
-def generate_daily_routine(n: int = 3) -> list:
+def generate_daily_routine(connection, n: int = 3) -> list:
     times = []
     incorrects = []
     corrects = []
@@ -67,10 +75,13 @@ def generate_daily_routine(n: int = 3) -> list:
         print()
     notes = input('Enter any notes: ')
     avg_time = sum(times)/len(times)
+    add_record(connection, (sum(times), avg_time, ', '.join(
+        map(str, times)), n, sum(corrects), sum(incorrects), notes))
     append_column_to_csv([dt.now(), sum(times), avg_time, n, sum(corrects), sum(incorrects), notes],
                          daily_routine_filename)
     print(f'Your average solving time is: {avg_time} seconds')
     return times
+
 
 def settings():
     print('Settings')
@@ -89,7 +100,7 @@ def settings():
 
     elif option == '2':
         n = int(input('Write the new number of exercises in the daily routine: '))
-        config['n_exercises'] = n
+        config['n'] = n
         with open('config.json', 'w') as f:
             json.dump(config, f)
     elif option == '3':
@@ -108,7 +119,8 @@ def print_menu():
 
 
 if __name__ == '__main__':
-    start_configuration()
+    connection = create_connection('sem_app.sqlite')
+    start_configuration(connection)
     while True:
         try:
             print_menu()
@@ -123,7 +135,7 @@ if __name__ == '__main__':
             elif option == '2':
                 measure_exercise()
             elif option == '3':
-                generate_daily_routine(n)
+                generate_daily_routine(connection, n=n)
             elif option == '4':
                 settings()
             elif option == '5':
