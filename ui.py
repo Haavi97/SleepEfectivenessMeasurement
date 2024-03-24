@@ -1,7 +1,10 @@
 import sys
-from PySide6.QtWidgets import QWidget, QApplication, QVBoxLayout, QPushButton
 import json
+from PySide6.QtWidgets import QWidget, QApplication, QVBoxLayout, QPushButton
 from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton
+
+from random_exercise import generate_exercise_with_solution
+from PySide6.QtWidgets import QMessageBox
 
 
 class MainWindow(QWidget):
@@ -9,6 +12,8 @@ class MainWindow(QWidget):
         super().__init__()
         self.initUI()
         self.settings_window = None
+        self.exercise = None
+        self.solution = None
 
     def initUI(self):
         self.setWindowTitle("Sleep Effectiveness Measurement")
@@ -22,16 +27,64 @@ class MainWindow(QWidget):
         routine_button = QPushButton("Generate Daily Routine")
         layout.addWidget(routine_button)
 
-        exercise_button = QPushButton("Random Exercise")
-        layout.addWidget(exercise_button)
+        self.exercise_button = QPushButton("Random Exercise")
+        layout.addWidget(self.exercise_button)
+        self.exercise_button.clicked.connect(self.generate_random_exercise)
+
+        self.exercise_textbox = QLabel()
+        self.exercise_textbox.hide()
+        layout.addWidget(self.exercise_textbox)
+
+        self.exercise_answer_textbox = QLineEdit()
+        self.exercise_answer_textbox.hide()
+        layout.addWidget(self.exercise_answer_textbox)
+
+        self.check_button = QPushButton("Check Exercise")
+        self.check_button.hide()
+        layout.addWidget(self.check_button)
 
         self.setLayout(layout)
         self.show()
 
         settings_button.clicked.connect(self.open_settings_window)
+        routine_button.clicked.connect(self.generate_daily_routine)
+        self.check_button.clicked.connect(self.check_exercise)
 
     def open_settings_window(self):
         self.settings_window = SettingsWindow()
+
+    def generate_random_exercise(self):
+        self.exercise, self.solution = generate_exercise_with_solution()
+        self.exercise_textbox.setText(self.exercise)
+        self.exercise_answer_textbox.show()
+        self.exercise_textbox.show()
+        self.check_button.show()
+
+    def generate_daily_routine(self):
+        # Generate daily routine logic here
+        pass
+
+    def check_exercise(self):
+        try:
+            exercise = int(self.exercise_answer_textbox.text())
+            if exercise == self.solution:
+                self.show_success_message()
+                self.exercise_textbox.hide()
+                self.exercise_answer_textbox.hide()
+                self.check_button.hide()
+            else:
+                self.show_failure_message()
+        except ValueError:
+            QMessageBox.information(self, "Error", "Please, type a number!")
+        except Exception as e:
+            QMessageBox.information(self, "Error", str(e))
+
+    def show_success_message(self):
+        QMessageBox.information(
+            self, "Success", "Exercise is correct! Well done!")
+
+    def show_failure_message(self):
+        QMessageBox.information(self, "Failure", "Worng! Try again!")
 
 
 class SettingsWindow(QWidget):
