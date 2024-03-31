@@ -61,7 +61,9 @@ class MainWindow(QWidget):
         self.check_button.show()
 
     def generate_daily_routine(self):
-        # Generate daily routine logic here
+
+        self.daily_routine_window = DailyRoutineWindow()
+        self.daily_routine_window.show()
         pass
 
     def check_exercise(self):
@@ -131,6 +133,41 @@ class SettingsWindow(QWidget):
 
         self.setLayout(layout)
         self.show()
+
+
+class DailyRoutineWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle("Daily Routine")
+        self.setGeometry(300, 300, 500, 400)
+
+        layout = QVBoxLayout()
+
+        self.exercises = [generate_exercise_with_solution() for i in range(5)]
+        self.current_exercise_index = 0
+
+        self.exercise_label = QLabel()
+        layout.addWidget(self.exercise_label)
+
+        self.next_button = QPushButton("Next Exercise")
+        layout.addWidget(self.next_button)
+        self.next_button.clicked.connect(self.show_next_exercise)
+
+        self.setLayout(layout)
+        self.show()
+
+        self.show_next_exercise()
+
+    def show_next_exercise(self):
+        if self.current_exercise_index < len(self.exercises):
+            exercise, solution = self.exercises[self.current_exercise_index]
+            self.exercise_label.setText(exercise)
+            self.current_exercise_index += 1
+        else:
+            self.exercise_label.setText("No more exercises!")
 
 
 if __name__ == "__main__":
