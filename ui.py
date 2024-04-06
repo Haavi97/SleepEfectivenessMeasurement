@@ -86,7 +86,7 @@ class MainWindow(QWidget):
             self, "Success", "Exercise is correct! Well done!")
 
     def show_failure_message(self):
-        QMessageBox.information(self, "Failure", "Worng! Try again!")
+        QMessageBox.information(self, "Failure", "Wrong! Try again!")
 
 
 class SettingsWindow(QWidget):
@@ -138,6 +138,7 @@ class SettingsWindow(QWidget):
 class DailyRoutineWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.solution = None
         self.initUI()
 
     def initUI(self):
@@ -152,18 +153,40 @@ class DailyRoutineWindow(QWidget):
         self.exercise_label = QLabel()
         layout.addWidget(self.exercise_label)
 
+        self.exercise_answer_textbox = QLineEdit()
+        layout.addWidget(self.exercise_answer_textbox)
+
+        self.error_label = QLabel()
+        self.error_label.hide()
+        layout.addWidget(self.error_label)
+
         self.next_button = QPushButton("Next Exercise")
         layout.addWidget(self.next_button)
-        self.next_button.clicked.connect(self.show_next_exercise)
+        self.next_button.clicked.connect(self.check_exercise)
 
         self.setLayout(layout)
         self.show()
 
         self.show_next_exercise()
 
+    def check_exercise(self):
+        try:
+            exercise = int(self.exercise_answer_textbox.text())
+            if exercise == self.solution:
+                self.exercise_answer_textbox.clear()
+                self.error_label.hide()
+                self.show_next_exercise()
+            else:
+                self.error_label.setText("Wrong! Try again!")
+                self.error_label.show()
+        except ValueError:
+            QMessageBox.information(self, "Error", "Please, type a number!")
+        except Exception as e:
+            QMessageBox.information(self, "Error", str(e))
+
     def show_next_exercise(self):
         if self.current_exercise_index < len(self.exercises):
-            exercise, solution = self.exercises[self.current_exercise_index]
+            exercise, self.solution = self.exercises[self.current_exercise_index]
             self.exercise_label.setText(exercise)
             self.current_exercise_index += 1
         else:
