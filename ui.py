@@ -1,5 +1,7 @@
 import sys
 import json
+from datetime import datetime as dt
+
 from PySide6.QtWidgets import QWidget, QApplication, QVBoxLayout, QPushButton
 from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton
 
@@ -139,6 +141,10 @@ class DailyRoutineWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.solution = None
+        self.times = []
+        self.corrects = 0
+        self.incorrects = 0
+        self.exercise_start_time = None
         self.initUI()
 
     def initUI(self):
@@ -175,8 +181,13 @@ class DailyRoutineWindow(QWidget):
             if exercise == self.solution:
                 self.exercise_answer_textbox.clear()
                 self.error_label.hide()
+                self.corrects += 1
+                now = dt.now()
+                delta_time = (now - self.exercise_start_time).seconds
+                self.times.append(delta_time)
                 self.show_next_exercise()
             else:
+                self.incorrects += 1
                 self.error_label.setText("Wrong! Try again!")
                 self.error_label.show()
         except ValueError:
@@ -189,8 +200,19 @@ class DailyRoutineWindow(QWidget):
             exercise, self.solution = self.exercises[self.current_exercise_index]
             self.exercise_label.setText(exercise)
             self.current_exercise_index += 1
+            self.exercise_start_time = dt.now()
         else:
             self.exercise_label.setText("No more exercises!")
+            self.exercise_answer_textbox.hide()
+            self.next_button.hide()
+            self.error_label.hide()
+            self.show_summary()
+
+    def show_summary(self):
+        avg_time = sum(self.times) / len(self.times)
+        QMessageBox.information(
+            self, "Summary", f"Your average solving time is: {avg_time} seconds\n \
+             Correct: {self.corrects}, Incorrect: {self.incorrects}")
 
 
 if __name__ == "__main__":
